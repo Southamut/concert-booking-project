@@ -31,9 +31,9 @@ export function AdminSidebar() {
             <SidebarMenuItem className="p-2">
               <SidebarMenuButton
                 asChild
-                isActive={pathname === "/admin"}
+                isActive={pathname === "/admin/home"}
                 tooltip="Home"
-                className="w-full h-full px-2! py-6! hover:bg-[#EAF5F9]"
+                className="w-full h-full px-2! py-6! hover:bg-[#EAF5F9] data-[active=true]:bg-[#EAF5F9]"
               >
                 <Link href="/admin/home">
                   <div className="flex items-center gap-[10px]">
@@ -48,7 +48,7 @@ export function AdminSidebar() {
                 asChild
                 isActive={pathname === "/admin/history"}
                 tooltip="History"
-                className="w-full h-full px-2! py-6! hover:bg-[#EAF5F9]"
+                className="w-full h-full px-2! py-6! hover:bg-[#EAF5F9] data-[active=true]:bg-[#EAF5F9]"
               >
                 <Link href="/admin/history">
                   <div className="flex items-center gap-[10px]">
