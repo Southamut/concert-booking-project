@@ -9,8 +9,8 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout(props: AdminLayoutProps) {
-  const { children } = props;
+  const { children } = props; 
 
-  return <AppLayout sidebar={<AdminSidebar />}>{children}</AppLayout>;
+  return <AppLayout sidebar={<AdminSidebar />} title="Admin">{children}</AppLayout>;
 }
 

@@ -11,6 +11,6 @@ interface UserLayoutProps {
 export function UserLayout(props: UserLayoutProps) {
   const { children } = props;
 
-  return <AppLayout sidebar={<UserSidebar />}>{children}</AppLayout>;
+  return <AppLayout sidebar={<UserSidebar />} title="User">{children}</AppLayout>;
 }
 
