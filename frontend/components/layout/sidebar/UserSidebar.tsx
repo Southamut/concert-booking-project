@@ -11,25 +11,31 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 export function UserSidebar() {
   return (
     <Sidebar>
-      <SidebarHeader>
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-black">User</h1>
+      <SidebarHeader className="pt-10 pb-0 px-0">
+        <div className="p-6 flex items-center justify-between">
+          <h1 className="text-[40px] font-semibold text-black">User</h1>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="p-0">
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Switch to Admin">
+            <SidebarMenuItem className="p-2">
+              <SidebarMenuButton
+                asChild
+                tooltip="Switch to Admin"
+                className="w-full h-full pl-2! pr-0 py-6! hover:bg-[#EAF5F9]">
                 <Link href="/admin/home">
-                  <RefreshCw className="h-4 w-4" />
-                  <span>Switch to Admin</span>
+                  <div className="flex items-center gap-[10px]">
+                    <RefreshCw className="h-6 w-6" />
+                    <span className="text-2xl text-black font-normal">Switch to Admin</span>
+                  </div>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -37,12 +43,14 @@ export function UserSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="pb-10 px-0">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Logout">
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
+          <SidebarMenuItem className="p-2">
+            <SidebarMenuButton tooltip="Logout" className="w-full h-full px-2! py-6! hover:bg-[#EAF5F9]">
+              <div className="flex items-center gap-[10px]">
+                <LogOut className="h-6 w-6" />
+                <span className="text-2xl text-black font-normal">Logout</span>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
