@@ -19,13 +19,13 @@ export function AdminSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="pt-10 pb-0 px-0">
+      <SidebarHeader className="pt-10 pb-0 px-0 bg-white">
         <div className="p-6 flex items-center justify-between">
           <h1 className="text-[40px] font-semibold text-black">Admin</h1>
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-white">
         <SidebarGroup className="p-0">
           <SidebarMenu className="gap-0">
             <SidebarMenuItem className="p-2">
@@ -81,7 +81,7 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="pb-10 px-0">
+      <SidebarFooter className="pb-10 px-0 bg-white">
         <SidebarMenu>
           <SidebarMenuItem className="p-2">
             <SidebarMenuButton tooltip="Logout" className="w-full h-full px-2! py-6! hover:bg-[#EAF5F9]">

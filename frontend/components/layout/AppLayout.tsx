@@ -18,7 +18,7 @@ export function AppLayout(props: AppLayoutProps) {
       } as React.CSSProperties}>
       {sidebar}
       <SidebarInset>
-        <main className="flex-1 overflow-y-auto bg-white p-6">
+        <main className="flex-1 overflow-y-auto bg-[#FBFBFB]  p-6">
           {children}
         </main>
       </SidebarInset>
