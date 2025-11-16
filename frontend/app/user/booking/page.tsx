@@ -1,5 +1,8 @@
+"use client";
+
 import { UserLayout } from "@/components/layout/UserLayout";
 import { ConcertCard } from "@/components/card/ConcertCard";
+import { useEffect, useMemo, useState } from "react";
 
 type Concert = {
   id: number;
@@ -9,21 +12,123 @@ type Concert = {
   availableSeats: number;
 };
 
-export default async function BookingPage() {
-  // Get concerts from backend
-  const res = await fetch("http://localhost:3001/concerts", { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error("Failed to load concerts");
-  }
-  const concerts: Concert[] = await res.json();
+type Reservation = {
+  id: number;
+  userEmail: string;
+  userName: string;
+  concertId: number;
+  createdAt: string;
+};
 
+// mock user
+const CURRENT_USER = {
+  email: "john@example.com",
+  name: "John Doe",
+};
+
+const API = "http://localhost:3001";
+
+export default function BookingPage() {
+
+  const [concerts, setConcerts] = useState<Concert[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const reservedSet = useMemo(
+    () => new Set(reservations.map((reservation) => reservation.concertId)),
+    [reservations]
+  );
+  const reservationIdByConcert = useMemo(() => {
+    const map = new Map<number, number>();
+    reservations.forEach((r) => map.set(r.concertId, r.id));
+    return map;
+  }, [reservations]);
+
+  // Get concerts and reservations from backend
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [cRes, rRes] = await Promise.all([
+        fetch(`${API}/concerts`, { cache: "no-store" }),
+        fetch(`${API}/reservations/user/${encodeURIComponent(CURRENT_USER.email)}`, {
+          cache: "no-store",
+        }),
+      ]);
+      if (!cRes.ok) throw new Error("Failed to load concerts");
+      if (!rRes.ok) throw new Error("Failed to load reservations");
+      const [c, r] = (await Promise.all([cRes.json(), rRes.json()])) as [
+        Concert[],
+        Reservation[]
+      ];
+      setConcerts(c);
+      setReservations(r);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Reserve a concert
+  const handleReserve = async (concertId: number) => {
+    const body = {
+      concertId,
+      userEmail: CURRENT_USER.email,
+      userName: CURRENT_USER.name,
+    };
+    const res = await fetch(`${API}/reservations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-email": CURRENT_USER.email,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const msg = await res.text();
+      alert(msg || "Reserve failed");
+      return;
+    }
+    await loadData(); // refresh concerts (seats) and reservations
+  };
+
+  // Cancel a reservation
+  const handleCancel = async (reservationId: number) => {
+    const res = await fetch(`${API}/reservations/${reservationId}`, {
+      method: "DELETE",
+      headers: {
+        "x-user-email": CURRENT_USER.email,
+      },
+    });
+    if (!res.ok) {
+      const msg = await res.text();
+      alert(msg || "Cancel failed");
+      return;
+    }
+    await loadData();
+  };
+
+  // Render the page
   return (
     <UserLayout>
       <div className="pt-10 sm:px-4 px-0">
         <div className="flex flex-col max-w-6xl mx-auto gap-6">
-          {concerts.map((concert) => (
-            <ConcertCard key={concert.id} concert={concert} />
-          ))}
+          {/* All concerts (includes sold out) */}
+          {loading && <p>Loading...</p>}
+          {!loading &&
+            concerts.map((concert) => (
+              <ConcertCard
+                key={concert.id}
+                concert={concert}
+                reserved={reservedSet.has(concert.id)}
+                reservationId={reservationIdByConcert.get(concert.id)}
+                onReserve={handleReserve}
+                onCancel={handleCancel}
+              />
+            ))}
         </div>
       </div>
     </UserLayout>

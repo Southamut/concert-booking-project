@@ -10,7 +10,22 @@ type Concert = {
     availableSeats: number;
 };
 
-export const ConcertCard = ({ concert }: { concert: Concert }) => {
+export const ConcertCard = ({
+    concert,
+    reserved,
+    onReserve,
+    onCancel,
+    reservationId,
+}: {
+    concert: Concert;
+    reserved?: boolean;
+    onReserve?: (concertId: number) => void;
+    onCancel?: (reservationId: number) => void;
+    reservationId?: number;
+}) => {
+
+    const soldOut = concert.availableSeats <= 0;
+
     return (
         <Card className="bg-white border border-[#C2C2C2] shadow-none sm:p-10 p-4 sm:gap-8 gap-10">
             <div className="flex flex-col gap-6">
@@ -28,7 +43,22 @@ export const ConcertCard = ({ concert }: { concert: Concert }) => {
                     <User className="w-8 h-8" />
                     <p className="text-2xl font-normal">{concert.availableSeats}</p>
                 </div>
-                <Button className="sm:w-[160px] w-full h-15 bg-[#1692EC] text-white py-6 px-4 rounded-md text-2xl font-semibold">Reserve</Button>
+                {reserved && onCancel && typeof reservationId === "number" ? (
+                    <Button
+                        className="sm:w-[160px] w-full h-15 bg-[#F96464] text-white py-6 px-4 rounded-md text-2xl font-semibold"
+                        onClick={() => onCancel(reservationId)}
+                    >
+                        Cancel
+                    </Button>
+                ) : (
+                    <Button
+                        className={`sm:w-[160px] w-full h-15 ${soldOut ? "bg-gray-400" : "bg-[#1692EC]"} text-white py-6 px-4 rounded-md text-2xl font-semibold`}
+                        disabled={soldOut || !!reserved || !onReserve}
+                        onClick={() => onReserve && onReserve(concert.id)}
+                    >
+                        {reserved ? "Reserved" : soldOut ? "Sold out" : "Reserve"}
+                    </Button>
+                )}
             </div>
         </Card>
     );
