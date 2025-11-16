@@ -115,7 +115,7 @@ export default function BookingPage() {
   // Render the page
   return (
     <UserLayout>
-      <div className="pt-10 sm:px-4 px-0">
+      <div className="pt-6">
         <div className="flex flex-col max-w-6xl mx-auto gap-6">
           {/* All concerts (includes sold out) */}
           {loading && (

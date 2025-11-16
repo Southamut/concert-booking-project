@@ -94,8 +94,8 @@ export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="rounded-md border p-10 bg-white border-[#C2C2C2] shadow-none space-y-6">
-            <h2 className="text-[40px] text-[#1692EC] font-semibold border-b border-[#C2C2C2] pb-6">Create</h2>
+        <form onSubmit={handleSubmit} className="rounded-md border lg:p-10 p-6 bg-white border-[#C2C2C2] shadow-none space-y-6">
+            <h2 className="sm:text-[40px] text-2xl text-center lg:text-left text-[#1692EC] font-semibold border-b border-[#C2C2C2] pb-6">Create</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="flex flex-col">
                     <label className="text-2xl font-normal text-black pb-4">Concert Name</label>
@@ -132,7 +132,7 @@ export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
             <div className="flex flex-col">
                 <label className="text-2xl font-normal text-black pb-4">Description</label>
                 <Textarea
-                    className="border border-[#5C5C5C] py-3 px-4 h-[100px] pr-10 text-black font-medium placeholder:text-[#C2C2C2]"
+                    className="border border-[#5C5C5C] py-3 px-4 sm:h-[100px] h-40 pr-10 text-black font-medium placeholder:text-[#C2C2C2]"
                     placeholder="Please input description"
                     value={form.description}
                     onChange={handleChange("description")}

@@ -26,7 +26,7 @@ export function AppLayout(props: AppLayoutProps) {
           <SidebarTrigger className="-ml-1" />
           <p className="text-2xl font-semibold">{title}</p>
         </header>
-        <main className="flex-1 overflow-y-auto bg-[#FBFBFB]  p-6">
+        <main className="flex-1 overflow-y-auto bg-[#FBFBFB]  lg:p-10 p-6">
           {children}
         </main>
         <Toaster />

@@ -74,7 +74,7 @@ export default function AdminHomePage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-12 max-w-6xl mx-auto pt-10">
+      <div className="space-y-12 max-w-6xl mx-auto pt-6">
         {/* Stat cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="rounded-md lg:max-w-[350px] w-full bg-[#0070A4] py-6 px-4 flex flex-col items-center gap-[10px] justify-between text-center">
