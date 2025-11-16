@@ -5,14 +5,14 @@ import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 
-type Reservation = {
+type ReservationEvent = {
   id: number;
+  reservationId: number;
   userEmail: string;
   userName: string;
   concertId: number;
-  createdAt: string;
-  status: 'reserved' | 'cancelled';
-  cancelledAt?: string;
+  type: "RESERVE" | "CANCEL";
+  at: string;
 };
 
 type Concert = {
@@ -34,43 +34,25 @@ export default function AdminHistoryPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const [rRes, cRes] = await Promise.all([
-        fetch(`${API}/reservations/all`, {
+      const [eventsRes, concertsRes] = await Promise.all([
+        fetch(`${API}/reservations/history`, {
           headers: { "x-is-admin": "true" },
           cache: "no-store",
         }),
         fetch(`${API}/concerts`, { cache: "no-store" }),
       ]);
-      const reservations: Reservation[] = rRes.ok ? await rRes.json() : [];
-      const concerts: Concert[] = cRes.ok ? await cRes.json() : [];
+      const events: ReservationEvent[] = eventsRes.ok ? await eventsRes.json() : [];
+      const concerts: Concert[] = concertsRes.ok ? await concertsRes.json() : [];
       const idToConcert = new Map<number, string>(concerts.map((c) => [c.id, c.name]));
 
-      const mapped = reservations
-  .flatMap((r) => {
-    const base = {
-      userName: r.userName,
-      concertName: idToConcert.get(r.concertId) ?? `#${r.concertId}`,
-    };
-
-    const rows = [
-      {
-        ...base,
-        createdAt: r.createdAt,
-        action: "Reserve",
-      },
-    ];
-
-    if (r.status === "cancelled" && r.cancelledAt) {
-      rows.push({
-        ...base,
-        createdAt: r.cancelledAt,
-        action: "Cancel",
-      });
-    }
-
-    return rows;
-  })
-  .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+      const mapped = events
+        .map((e) => ({
+          createdAt: e.at,
+          userName: e.userName,
+          concertName: idToConcert.get(e.concertId) ?? `#${e.concertId}`,
+          action: e.type === "RESERVE" ? "Reserve" : "Cancel",
+        }))
+        .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 
       setRows(mapped);
     } finally {
