@@ -26,6 +26,18 @@ export interface Reservation {
   cancelledAt?: Date;
 }
 
+export type ReservationEventType = 'RESERVE' | 'CANCEL';
+
+export interface ReservationEvent {
+  id: number;
+  reservationId: number;
+  userEmail: string;
+  userName: string;
+  concertId: number;
+  type: ReservationEventType;
+  at: Date;
+}
+
 // In-memory storage with seed data
 export const db = {
   users: [
@@ -166,19 +178,23 @@ export const db = {
       status: 'reserved',
     },
   ] as Reservation[],
+
+  reservationEvents: [] as ReservationEvent[],
 };
 
 // Auto-increment IDs
 let nextUserId = 4;
 let nextConcertId = 9;
 let nextReservationId = 6;
+let nextReservationEventId = 1;
 
 export const getNextId = (
-  type: 'user' | 'concert' | 'reservation',
+  type: 'user' | 'concert' | 'reservation' | 'reservationEvent',
 ): number => {
   if (type === 'user') return nextUserId++;
   if (type === 'concert') return nextConcertId++;
-  return nextReservationId++;
+  if (type === 'reservation') return nextReservationId++;
+  return nextReservationEventId++;
 };
 
 // Helper functions
