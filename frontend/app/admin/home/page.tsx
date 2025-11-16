@@ -5,6 +5,8 @@ import { AdminLayout } from "@/components/layout/AdminLayout";
 import { useEffect, useMemo, useState } from "react";
 import { AdminConcertCardList } from "@/components/admin/AdminConcertCardList";
 import { User, CheckCircle, XCircle } from "lucide-react";
+import { AdminCreateConcertForm } from "@/components/admin/AdminCreateConcertForm";
+import { toast } from "sonner";
 
 type Concert = {
   id: number;
@@ -62,15 +64,16 @@ export default function AdminHomePage() {
     });
     if (!res.ok) {
       const msg = await res.text();
-      alert(msg || "Delete failed");
+      toast.error(msg || "Delete failed");
       return;
     }
     await loadData();
+    toast.success("Delete successfully");
   };
 
   return (
     <AdminLayout>
-      <div className="space-y-12 max-w-6xl pt-10">
+      <div className="space-y-12 max-w-6xl mx-auto pt-10">
         {/* Stat cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="rounded-md lg:max-w-[350px] w-full bg-[#0070A4] py-6 px-4 flex flex-col items-center gap-[10px] justify-between text-center">
@@ -113,9 +116,7 @@ export default function AdminHomePage() {
 
         {/* Create tab placeholder */}
         {tab === "create" && (
-          <div className="rounded-md border p-6 text-gray-600">
-            Create form placeholder
-          </div>
+          <AdminCreateConcertForm onCreated={loadData} />
         )}
       </div>
     </AdminLayout>
