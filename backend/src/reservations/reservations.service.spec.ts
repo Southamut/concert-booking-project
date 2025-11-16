@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { ConcertsService } from '../concerts/concerts.service';
-import { db, Reservation, Concert } from '../db/db';
+import { db, Reservation, Concert, ReservationEvent } from '../db/db';
 
 describe('ReservationsService', () => {
   let service: ReservationsService;
@@ -14,6 +14,7 @@ describe('ReservationsService', () => {
   let originalConcerts: Concert[];
   let originalReservations: Reservation[];
   let originalUsers: any[];
+  let originalEvents: ReservationEvent[];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +28,7 @@ describe('ReservationsService', () => {
     originalConcerts = JSON.parse(JSON.stringify(db.concerts));
     originalReservations = JSON.parse(JSON.stringify(db.reservations));
     originalUsers = JSON.parse(JSON.stringify(db.users));
+    originalEvents = JSON.parse(JSON.stringify(db.reservationEvents));
   });
 
   afterEach(() => {
@@ -34,6 +36,7 @@ describe('ReservationsService', () => {
     db.concerts = JSON.parse(JSON.stringify(originalConcerts));
     db.reservations = JSON.parse(JSON.stringify(originalReservations));
     db.users = JSON.parse(JSON.stringify(originalUsers));
+    db.reservationEvents = JSON.parse(JSON.stringify(originalEvents));
   });
 
   describe('findAll', () => {
@@ -78,6 +81,7 @@ describe('ReservationsService', () => {
 
         const beforeSeats = concertsService.findOne(concert.id).availableSeats;
         const beforeCount = db.reservations.length;
+        const beforeEvents = db.reservationEvents.length;
 
         const result = service.create(dto);
 
@@ -87,6 +91,12 @@ describe('ReservationsService', () => {
         expect(result.concertId).toBe(concert.id);
         expect(result.status).toBe('reserved');
         expect(db.reservations.length).toBe(beforeCount + 1);
+
+        // event logged
+        expect(db.reservationEvents.length).toBe(beforeEvents + 1);
+        const lastEvent = db.reservationEvents[db.reservationEvents.length - 1];
+        expect(lastEvent.type).toBe('RESERVE');
+        expect(lastEvent.reservationId).toBe(result.id);
 
         // Check seats decreased
         const afterSeats = concertsService.findOne(concert.id).availableSeats;
@@ -190,6 +200,7 @@ describe('ReservationsService', () => {
       const concertId = reservation.concertId;
       const beforeSeats = concertsService.findOne(concertId).availableSeats;
       const beforeCount = db.reservations.length;
+      const beforeEvents = db.reservationEvents.length;
 
       service.delete(reservation.id, reservation.userEmail);
 
@@ -199,6 +210,12 @@ describe('ReservationsService', () => {
       expect(stored).toBeDefined();
       expect(stored?.status).toBe('cancelled');
       expect(stored?.cancelledAt).toBeInstanceOf(Date);
+
+      // Cancel event logged
+      expect(db.reservationEvents.length).toBe(beforeEvents + 1);
+      const lastEvent = db.reservationEvents[db.reservationEvents.length - 1];
+      expect(lastEvent.type).toBe('CANCEL');
+      expect(lastEvent.reservationId).toBe(reservation.id);
 
       // Check seats increased
       const afterSeats = concertsService.findOne(concertId).availableSeats;

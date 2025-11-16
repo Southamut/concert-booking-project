@@ -25,6 +25,14 @@ export class ReservationsController {
     return this.reservationsService.findAll();
   }
 
+  @Get('history')
+  findHistory(@Headers('x-is-admin') isAdmin: string) {
+    if (isAdmin !== 'true') {
+      throw new UnauthorizedException('Admin access required');
+    }
+    return this.reservationsService.findHistory();
+  }
+
   @Get('user/:email')
   findByUser(@Param('email') email: string) {
     if (!email) {

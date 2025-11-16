@@ -7,6 +7,7 @@ import {
 import {
   db,
   Reservation,
+  ReservationEvent,
   getNextId,
   findUserByEmail,
   hasReservation,
@@ -25,6 +26,10 @@ export class ReservationsService {
 
   findByUser(userEmail: string): Reservation[] {
     return db.reservations.filter((r) => r.userEmail === userEmail);
+  }
+
+  findHistory(): ReservationEvent[] {
+    return db.reservationEvents.sort((a, b) => +b.at - +a.at);
   }
 
   create(dto: CreateReservationDto): Reservation {
@@ -68,6 +73,17 @@ export class ReservationsService {
     };
     db.reservations.push(reservation);
 
+    // Log event
+    db.reservationEvents.push({
+      id: getNextId('reservationEvent'),
+      reservationId: reservation.id,
+      userEmail: reservation.userEmail,
+      userName: reservation.userName,
+      concertId: reservation.concertId,
+      type: 'RESERVE',
+      at: reservation.createdAt,
+    });
+
     // Decrement seats
     this.concertsService.decrementSeats(concertId);
 
@@ -87,6 +103,17 @@ export class ReservationsService {
     reservation.status = 'cancelled';
     reservation.cancelledAt = new Date();
     this.concertsService.incrementSeats(reservation.concertId);
+
+    // Log cancel event
+    db.reservationEvents.push({
+      id: getNextId('reservationEvent'),
+      reservationId: reservation.id,
+      userEmail: reservation.userEmail,
+      userName: reservation.userName,
+      concertId: reservation.concertId,
+      type: 'CANCEL',
+      at: reservation.cancelledAt,
+    });
   }
 }
 

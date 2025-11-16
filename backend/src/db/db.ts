@@ -26,6 +26,18 @@ export interface Reservation {
   cancelledAt?: Date;
 }
 
+export type ReservationEventType = 'RESERVE' | 'CANCEL';
+
+export interface ReservationEvent {
+  id: number;
+  reservationId: number;
+  userEmail: string;
+  userName: string;
+  concertId: number;
+  type: ReservationEventType;
+  at: Date;
+}
+
 // In-memory storage with seed data
 export const db = {
   users: [
@@ -166,19 +178,69 @@ export const db = {
       status: 'reserved',
     },
   ] as Reservation[],
+
+  reservationEvents: [
+    {
+      id: 1,
+      reservationId: 1,
+      userEmail: 'john@example.com',
+      userName: 'John Doe',
+      concertId: 1,
+      type: 'RESERVE',
+      at: new Date('2024-01-11'),
+    },
+    {
+      id: 2,
+      reservationId: 2,
+      userEmail: 'jane@example.com',
+      userName: 'Jane Smith',
+      concertId: 1,
+      type: 'RESERVE',
+      at: new Date('2024-01-12'),
+    },
+    {
+      id: 3,
+      reservationId: 3,
+      userEmail: 'bob@example.com',
+      userName: 'Bob Johnson',
+      concertId: 2,
+      type: 'RESERVE',
+      at: new Date('2024-01-16'),
+    },
+    {
+      id: 4,
+      reservationId: 4,
+      userEmail: 'john@example.com',
+      userName: 'John Doe',
+      concertId: 2,
+      type: 'RESERVE',
+      at: new Date('2024-01-17'),
+    },
+    {
+      id: 5,
+      reservationId: 5,
+      userEmail: 'jane@example.com',
+      userName: 'Jane Smith',
+      concertId: 3,
+      type: 'RESERVE',
+      at: new Date('2024-01-21'),
+    },
+  ] as ReservationEvent[],
 };
 
 // Auto-increment IDs
 let nextUserId = 4;
 let nextConcertId = 9;
 let nextReservationId = 6;
+let nextReservationEventId = 6;
 
 export const getNextId = (
-  type: 'user' | 'concert' | 'reservation',
+  type: 'user' | 'concert' | 'reservation' | 'reservationEvent',
 ): number => {
   if (type === 'user') return nextUserId++;
   if (type === 'concert') return nextConcertId++;
-  return nextReservationId++;
+  if (type === 'reservation') return nextReservationId++;
+  return nextReservationEventId++;
 };
 
 // Helper functions
