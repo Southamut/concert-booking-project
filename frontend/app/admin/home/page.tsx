@@ -23,6 +23,8 @@ type Reservation = {
   userName: string;
   concertId: number;
   createdAt: string;
+  status: "reserved" | "cancelled";
+  cancelledAt?: string;
 };
 
 const API = "http://localhost:3001";
@@ -36,8 +38,14 @@ export default function AdminHomePage() {
     () => concerts.reduce((sum, c) => sum + c.totalSeats, 0),
     [concerts]
   );
-  const totalReserved = useMemo(() => reservations.length, [reservations]);
-  const totalCancelled = 0; // No cancellation history tracked in backend; left as 0 placeholder
+  const totalReserved = useMemo(
+    () => reservations.filter((r) => r.status === "reserved").length,
+    [reservations]
+  );
+  const totalCancelled = useMemo(
+    () => reservations.filter((r) => r.status === "cancelled").length,
+    [reservations]
+  );
 
   // Load data on mount
   const loadData = async () => {

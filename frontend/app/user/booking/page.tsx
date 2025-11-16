@@ -19,6 +19,8 @@ type Reservation = {
   userName: string;
   concertId: number;
   createdAt: string;
+  status: "reserved" | "cancelled";
+  cancelledAt?: string;
 };
 
 // mock user
@@ -36,12 +38,19 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(false);
 
   const reservedSet = useMemo(
-    () => new Set(reservations.map((reservation) => reservation.concertId)),
-    [reservations]
+    () =>
+      new Set(
+        reservations
+          .filter((reservation) => reservation.status === "reserved")
+          .map((reservation) => reservation.concertId),
+      ),
+    [reservations],
   );
   const reservationIdByConcert = useMemo(() => {
     const map = new Map<number, number>();
-    reservations.forEach((r) => map.set(r.concertId, r.id));
+    reservations
+      .filter((r) => r.status === "reserved")
+      .forEach((r) => map.set(r.concertId, r.id));
     return map;
   }, [reservations]);
 

@@ -11,6 +11,8 @@ type Reservation = {
   userName: string;
   concertId: number;
   createdAt: string;
+  status: 'reserved' | 'cancelled';
+  cancelledAt?: string;
 };
 
 type Concert = {
@@ -44,13 +46,31 @@ export default function AdminHistoryPage() {
       const idToConcert = new Map<number, string>(concerts.map((c) => [c.id, c.name]));
 
       const mapped = reservations
-        .map((r) => ({
-          createdAt: r.createdAt,
-          userName: r.userName,
-          concertName: idToConcert.get(r.concertId) ?? `#${r.concertId}`,
-          action: "Reserve",
-        }))
-        .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+  .flatMap((r) => {
+    const base = {
+      userName: r.userName,
+      concertName: idToConcert.get(r.concertId) ?? `#${r.concertId}`,
+    };
+
+    const rows = [
+      {
+        ...base,
+        createdAt: r.createdAt,
+        action: "Reserve",
+      },
+    ];
+
+    if (r.status === "cancelled" && r.cancelledAt) {
+      rows.push({
+        ...base,
+        createdAt: r.cancelledAt,
+        action: "Cancel",
+      });
+    }
+
+    return rows;
+  })
+  .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 
       setRows(mapped);
     } finally {
