@@ -4,9 +4,10 @@
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { useEffect, useMemo, useState } from "react";
 import { AdminConcertCardList } from "@/components/admin/AdminConcertCardList";
-import { User, CheckCircle, XCircle } from "lucide-react";
+import { User, CircleCheck, XCircle } from "lucide-react";
 import { AdminCreateConcertForm } from "@/components/admin/AdminCreateConcertForm";
 import { toast } from "sonner";
+import { showSuccessToast } from "@/components/toast/showSuccessToast";
 
 type Concert = {
   id: number;
@@ -68,7 +69,7 @@ export default function AdminHomePage() {
       return;
     }
     await loadData();
-    toast.success("Delete successfully");
+    showSuccessToast("Delete successfully");
   };
 
   return (
@@ -82,7 +83,7 @@ export default function AdminHomePage() {
             <span className="lg:text-6xl text-4xl text-white font-normal leading-[150%]">{totalSeats}</span>
           </div>
           <div className="rounded-md lg:max-w-[350px] w-full bg-[#00A58B] py-6 px-4 flex flex-col items-center gap-[10px] justify-between">
-            <CheckCircle className="h-10 w-10 text-white" />
+            <CircleCheck className="h-10 w-10 text-white" />
             <span className="lg:text-2xl text-xl text-white font-normal">Reserve</span>
             <span className="lg:text-6xl text-4xl text-white font-normal leading-[150%]">{totalReserved}</span>
           </div>

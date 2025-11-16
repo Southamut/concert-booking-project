@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { showSuccessToast } from "@/components/toast/showSuccessToast";
 import { User, SaveIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -84,9 +85,9 @@ export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
             // reset
             setForm({ name: "", description: "", totalSeats: 0 });
             await onCreated?.();
-            toast.success("Create successfully");
+            showSuccessToast("Create successfully");
         } catch (err: any) {
-            toast.error(err?.message ?? "Create failed");
+            showSuccessToast(err?.message ?? "Create failed");
         } finally {
             setSubmitting(false);
         }
