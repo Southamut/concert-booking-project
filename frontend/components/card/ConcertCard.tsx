@@ -24,7 +24,7 @@ export const ConcertCard = ({
     reservationId?: number;
 }) => {
 
-    const soldOut = concert.availableSeats <= 0;
+    const soldOut = concert.availableSeats === 0;
 
     return (
         <Card className="bg-white border border-[#C2C2C2] shadow-none sm:p-10 p-4 sm:gap-8 gap-10">
@@ -56,7 +56,7 @@ export const ConcertCard = ({
                         disabled={soldOut || !!reserved || !onReserve}
                         onClick={() => onReserve && onReserve(concert.id)}
                     >
-                        {reserved ? "Reserved" : soldOut ? "Sold out" : "Reserve"}
+                        {soldOut ? "Sold out" : "Reserve"}
                     </Button>
                 )}
             </div>

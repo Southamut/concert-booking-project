@@ -3,6 +3,7 @@
 import { UserLayout } from "@/components/layout/UserLayout";
 import { ConcertCard } from "@/components/card/ConcertCard";
 import { useEffect, useMemo, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 type Concert = {
   id: number;
@@ -117,7 +118,11 @@ export default function BookingPage() {
       <div className="pt-10 sm:px-4 px-0">
         <div className="flex flex-col max-w-6xl mx-auto gap-6">
           {/* All concerts (includes sold out) */}
-          {loading && <p>Loading...</p>}
+          {loading && (
+            <div className="flex items-center justify-center py-6">
+              <Spinner className="size-6 text-gray-400" />
+            </div>
+          )}
           {!loading &&
             concerts.map((concert) => (
               <ConcertCard
