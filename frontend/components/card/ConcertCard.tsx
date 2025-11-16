@@ -16,12 +16,14 @@ export const ConcertCard = ({
     onReserve,
     onCancel,
     reservationId,
+    actionSlot,
 }: {
     concert: Concert;
     reserved?: boolean;
     onReserve?: (concertId: number) => void;
     onCancel?: (reservationId: number) => void;
     reservationId?: number;
+    actionSlot?: React.ReactNode;
 }) => {
 
     const soldOut = concert.availableSeats === 0;
@@ -43,7 +45,9 @@ export const ConcertCard = ({
                     <User className="w-8 h-8" />
                     <p className="text-2xl font-normal">{concert.availableSeats}</p>
                 </div>
-                {reserved && onCancel && typeof reservationId === "number" ? (
+                {actionSlot ? (
+                    actionSlot
+                ) : reserved && onCancel && typeof reservationId === "number" ? (
                     <Button
                         className="sm:w-[160px] w-full h-15 bg-[#F96464] text-white py-6 px-4 rounded-md text-2xl font-semibold"
                         onClick={() => onCancel(reservationId)}
