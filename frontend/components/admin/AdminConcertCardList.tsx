@@ -1,5 +1,6 @@
 import { ConcertCard } from "@/components/card/ConcertCard";
 import { Button } from "@/components/ui/button";
+import { ConfirmDeleteDialog } from "@/components/alert/AlertDialog";
 
 export type AdminConcert = {
   id: number;
@@ -24,12 +25,18 @@ export function AdminConcertCardList(props: ConcertListProps) {
           key={c.id}
           concert={c}
           actionSlot={
-            <Button
-              className="sm:w-[160px] w-full h-15 bg-[#E84E4E] text-white py-6 px-4 rounded-md text-2xl font-semibold"
-              onClick={() => onDelete(c.id)}
-            >
-              Delete
-            </Button>
+            <ConfirmDeleteDialog
+              trigger={
+                <Button className="sm:w-[160px] w-full h-15 bg-[#E84E4E] text-white py-6 px-4 rounded-md text-2xl font-semibold">
+                  Delete
+                </Button>
+              }
+              title="Are you sure to delete?"
+              description={`“${c.name}”`}
+              confirmLabel="Yes, Delete"
+              cancelLabel="Cancel"
+              onConfirm={() => onDelete(c.id)}
+            />
           }
         />
       ))}
