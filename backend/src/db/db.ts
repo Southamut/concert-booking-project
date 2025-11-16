@@ -131,6 +131,7 @@ export const db = {
       userName: 'John Doe',
       concertId: 1,
       createdAt: new Date('2024-01-11'),
+      status: 'reserved',
     },
     {
       id: 2,
@@ -138,6 +139,7 @@ export const db = {
       userName: 'Jane Smith',
       concertId: 1,
       createdAt: new Date('2024-01-12'),
+      status: 'reserved',
     },
     {
       id: 3,
@@ -145,6 +147,7 @@ export const db = {
       userName: 'Bob Johnson',
       concertId: 2,
       createdAt: new Date('2024-01-16'),
+      status: 'reserved',
     },
     {
       id: 4,
@@ -152,6 +155,7 @@ export const db = {
       userName: 'John Doe',
       concertId: 2,
       createdAt: new Date('2024-01-17'),
+      status: 'reserved',
     },
     {
       id: 5,
@@ -159,6 +163,7 @@ export const db = {
       userName: 'Jane Smith',
       concertId: 3,
       createdAt: new Date('2024-01-21'),
+      status: 'reserved',
     },
   ] as Reservation[],
 };

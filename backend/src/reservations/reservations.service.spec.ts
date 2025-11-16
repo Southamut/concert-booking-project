@@ -85,6 +85,7 @@ describe('ReservationsService', () => {
         expect(result.userEmail).toBe('bob@example.com');
         expect(result.userName).toBe('Bob Johnson');
         expect(result.concertId).toBe(concert.id);
+        expect(result.status).toBe('reserved');
         expect(db.reservations.length).toBe(beforeCount + 1);
 
         // Check seats decreased
@@ -192,8 +193,12 @@ describe('ReservationsService', () => {
 
       service.delete(reservation.id, reservation.userEmail);
 
-      expect(db.reservations.length).toBe(beforeCount - 1);
-      expect(db.reservations.find((r) => r.id === reservation.id)).toBeUndefined();
+      // Soft delete: keep row but mark as cancelled
+      expect(db.reservations.length).toBe(beforeCount);
+      const stored = db.reservations.find((r) => r.id === reservation.id);
+      expect(stored).toBeDefined();
+      expect(stored?.status).toBe('cancelled');
+      expect(stored?.cancelledAt).toBeInstanceOf(Date);
 
       // Check seats increased
       const afterSeats = concertsService.findOne(concertId).availableSeats;
@@ -212,6 +217,25 @@ describe('ReservationsService', () => {
 
       expect(() => service.delete(reservation.id, otherEmail)).toThrow(BadRequestException);
       expect(() => service.delete(reservation.id, otherEmail)).toThrow('Can only cancel your own reservations');
+    });
+
+    it('should allow re-reserving same concert after cancellation', () => {
+      // take an existing reservation and cancel it
+      const existing = db.reservations[0];
+      const concertId = existing.concertId;
+      const userEmail = existing.userEmail;
+      const userName = existing.userName;
+
+      service.delete(existing.id, userEmail);
+
+      // now creating again for same user + concert should succeed
+      const beforeCount = db.reservations.length;
+      const result = service.create({ concertId, userEmail, userName });
+
+      expect(result.status).toBe('reserved');
+      expect(result.concertId).toBe(concertId);
+      expect(result.userEmail).toBe(userEmail);
+      expect(db.reservations.length).toBe(beforeCount + 1);
     });
   });
 });
