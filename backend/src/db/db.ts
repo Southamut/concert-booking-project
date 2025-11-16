@@ -22,6 +22,8 @@ export interface Reservation {
   userName: string;
   concertId: number;
   createdAt: Date;
+  status: 'reserved' | 'cancelled';      // NEW
+  cancelledAt?: Date;
 }
 
 // In-memory storage with seed data
@@ -196,12 +198,12 @@ export const findOrCreateUser = (email: string, name: string): User => {
   return createUser(email, name);
 };
 
-export const hasReservation = (
-  userEmail: string,
-  concertId: number,
-): boolean => {
+export const hasReservation = (userEmail: string, concertId: number): boolean => {
   return db.reservations.some(
-    (r) => r.userEmail === userEmail && r.concertId === concertId,
+    (r) =>
+      r.userEmail === userEmail &&
+      r.concertId === concertId &&
+      r.status === 'reserved',          // only active ones
   );
 };
 

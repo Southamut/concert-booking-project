@@ -64,6 +64,7 @@ export class ReservationsService {
       userName: user.name,
       concertId,
       createdAt: new Date(),
+      status: 'reserved',
     };
     db.reservations.push(reservation);
 
@@ -74,17 +75,17 @@ export class ReservationsService {
   }
 
   delete(id: number, userEmail: string): void {
-    const index = db.reservations.findIndex((r) => r.id === id);
-    if (index === -1) {
-      throw new NotFoundException('Reservation not found');
-    }
-
-    const reservation = db.reservations[index];
+    const reservation = db.reservations.find((r) => r.id === id);
+    if (!reservation) throw new NotFoundException('Reservation not found');
     if (reservation.userEmail !== userEmail) {
       throw new BadRequestException('Can only cancel your own reservations');
     }
+    if (reservation.status === 'cancelled') {
+      return;
+    }
 
-    db.reservations.splice(index, 1);
+    reservation.status = 'cancelled';
+    reservation.cancelledAt = new Date();
     this.concertsService.incrementSeats(reservation.concertId);
   }
 }
