@@ -25,7 +25,7 @@ export function AdminConcertCardList(props: ConcertListProps) {
           concert={c}
           actionSlot={
             <Button
-              className="sm:w-[160px] w-full h-15 bg-[#F96464] text-white py-6 px-4 rounded-md text-2xl font-semibold"
+              className="sm:w-[160px] w-full h-15 bg-[#E84E4E] text-white py-6 px-4 rounded-md text-2xl font-semibold"
               onClick={() => onDelete(c.id)}
             >
               Delete
