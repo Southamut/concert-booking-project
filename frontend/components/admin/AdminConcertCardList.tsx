@@ -13,10 +13,11 @@ export type AdminConcert = {
 interface ConcertListProps {
   concerts: AdminConcert[];
   onDelete: (concertId: number) => void;
+  deleting?: number | null;
 }
 
 export function AdminConcertCardList(props: ConcertListProps) {
-  const { concerts, onDelete } = props;
+  const { concerts, onDelete, deleting } = props;
 
   return (
     <div className="flex flex-col gap-6">
@@ -27,12 +28,15 @@ export function AdminConcertCardList(props: ConcertListProps) {
           actionSlot={
             <ConfirmDeleteDialog
               trigger={
-                <Button className="sm:w-[160px] w-full h-15 bg-[#E84E4E] text-white py-6 px-4 rounded-md text-2xl font-semibold">
-                  Delete
+                <Button 
+                  className="sm:w-[160px] w-full h-15 bg-[#E84E4E] text-white py-6 px-4 rounded-md text-2xl font-semibold"
+                  disabled={deleting === c.id}
+                >
+                  {deleting === c.id ? "Deleting..." : "Delete"}
                 </Button>
               }
               title="Are you sure to delete?"
-              description={`“${c.name}”`}
+              description={`"${c.name}"`}
               confirmLabel="Yes, Delete"
               cancelLabel="Cancel"
               onConfirm={() => onDelete(c.id)}

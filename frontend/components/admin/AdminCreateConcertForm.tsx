@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { showSuccessToast } from "@/components/toast/showSuccessToast";
+import { toast } from "sonner";
 import { User, SaveIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -88,7 +89,7 @@ export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
             showSuccessToast("Create successfully");
             onSuccess?.(); //callback for overview page to refresh data
         } catch (err: any) {
-            showSuccessToast(err?.message ?? "Create failed");
+            toast.error(err?.message ?? "Create failed");
         } finally {
             setSubmitting(false);
         }

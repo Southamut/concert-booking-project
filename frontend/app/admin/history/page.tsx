@@ -4,6 +4,8 @@
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 type ReservationEvent = {
   id: number;
@@ -41,8 +43,18 @@ export default function AdminHistoryPage() {
         }),
         fetch(`${API}/concerts`, { cache: "no-store" }),
       ]);
-      const events: ReservationEvent[] = eventsRes.ok ? await eventsRes.json() : [];
-      const concerts: Concert[] = concertsRes.ok ? await concertsRes.json() : [];
+      if (!eventsRes.ok) {
+        const msg = await eventsRes.text();
+        toast.error(msg || "Failed to load history");
+        return;
+      }
+      if (!concertsRes.ok) {
+        const msg = await concertsRes.text();
+        toast.error(msg || "Failed to load concerts");
+        return;
+      }
+      const events: ReservationEvent[] = await eventsRes.json();
+      const concerts: Concert[] = await concertsRes.json();
       const idToConcert = new Map<number, string>(concerts.map((c) => [c.id, c.name]));
 
       const mapped = events
@@ -55,6 +67,8 @@ export default function AdminHistoryPage() {
         .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 
       setRows(mapped);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to load history");
     } finally {
       setLoading(false);
     }
@@ -67,8 +81,14 @@ export default function AdminHistoryPage() {
   return (
     <AdminLayout>
       <div className="space-y-12 max-w-6xl mx-auto pt-6">
-        <div className="overflow-hidden rounded-sm border border-[#5B5B5B] border-b-0 bg-white shadow-none">
-          <Table className="border-collapse">
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <Spinner className="size-8 text-gray-400" />
+          </div>
+        )}
+        {!loading && (
+          <div className="overflow-hidden rounded-sm border border-[#5B5B5B] border-b-0 bg-white shadow-none">
+            <Table className="border-collapse">
             <TableHeader className="bg-white text-black">
               <TableRow>
                 <TableHead className="px-4 py-3 text-black text-xl border border-b-[#5B5B5B] border-r-[#5B5B5B]">
@@ -105,6 +125,7 @@ export default function AdminHistoryPage() {
             </TableBody>
           </Table>
         </div>
+        )}
       </div>
     </AdminLayout>
   );
