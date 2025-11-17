@@ -9,6 +9,7 @@ import { AdminCreateConcertForm } from "@/components/admin/AdminCreateConcertFor
 import { toast } from "sonner";
 import { showSuccessToast } from "@/components/toast/showSuccessToast";
 import { Spinner } from "@/components/ui/spinner";
+import { API_BASE } from "@/lib/api";
 
 type Concert = {
   id: number;
@@ -27,8 +28,6 @@ type Reservation = {
   status: "reserved" | "cancelled";
   cancelledAt?: string;
 };
-
-const API = "http://localhost:3001";
 
 export default function AdminHomePage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
@@ -55,8 +54,8 @@ export default function AdminHomePage() {
     setLoading(true);
     try {
       const [cRes, rRes] = await Promise.all([
-        fetch(`${API}/concerts`, { cache: "no-store" }),
-        fetch(`${API}/reservations/all`, {
+        fetch(`${API_BASE}/concerts`, { cache: "no-store" }),
+        fetch(`${API_BASE}/reservations/all`, {
           headers: { "x-is-admin": "true" },
           cache: "no-store",
         }),
@@ -90,7 +89,7 @@ export default function AdminHomePage() {
   const handleDeleteConcert = async (concertId: number) => {
     setDeleting(concertId);
     try {
-      const res = await fetch(`${API}/concerts/${concertId}`, {
+      const res = await fetch(`${API_BASE}/concerts/${concertId}`, {
         method: "DELETE",
         headers: { "x-is-admin": "true" },
       });

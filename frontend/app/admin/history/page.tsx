@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { API_BASE } from "@/lib/api";
 
 type ReservationEvent = {
   id: number;
@@ -25,8 +26,6 @@ type Concert = {
   availableSeats: number;
 };
 
-const API = "http://localhost:3001";
-
 export default function AdminHistoryPage() {
   const [rows, setRows] = useState<
     Array<{ createdAt: string; userName: string; concertName: string; action: string }>
@@ -37,11 +36,11 @@ export default function AdminHistoryPage() {
     setLoading(true);
     try {
       const [eventsRes, concertsRes] = await Promise.all([
-        fetch(`${API}/reservations/history`, {
+        fetch(`${API_BASE}/reservations/history`, {
           headers: { "x-is-admin": "true" },
           cache: "no-store",
         }),
-        fetch(`${API}/concerts`, { cache: "no-store" }),
+        fetch(`${API_BASE}/concerts`, { cache: "no-store" }),
       ]);
       if (!eventsRes.ok) {
         const msg = await eventsRes.text();

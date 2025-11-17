@@ -5,6 +5,7 @@ import { ConcertCard } from "@/components/card/ConcertCard";
 import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { API_BASE } from "@/lib/api";
 
 type Concert = {
   id: number;
@@ -24,15 +25,16 @@ type Reservation = {
   cancelledAt?: string;
 };
 
-// mock user
-const CURRENT_USER = {
-  email: "john@example.com",
-  name: "John Doe",
+// Mock user - can be replaced with actual auth system
+const getCurrentUser = () => {
+  return {
+    email: process.env.NEXT_PUBLIC_MOCK_USER_EMAIL || "john@example.com",
+    name: process.env.NEXT_PUBLIC_MOCK_USER_NAME || "John Doe",
+  };
 };
 
-const API = "http://localhost:3001";
-
 export default function BookingPage() {
+  const CURRENT_USER = getCurrentUser();
 
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -62,8 +64,8 @@ export default function BookingPage() {
     setLoading(true);
     try {
       const [cRes, rRes] = await Promise.all([
-        fetch(`${API}/concerts`, { cache: "no-store" }),
-        fetch(`${API}/reservations/user/${encodeURIComponent(CURRENT_USER.email)}`, {
+        fetch(`${API_BASE}/concerts`, { cache: "no-store" }),
+        fetch(`${API_BASE}/reservations/user/${encodeURIComponent(CURRENT_USER.email)}`, {
           cache: "no-store",
         }),
       ]);
@@ -104,7 +106,7 @@ export default function BookingPage() {
         userEmail: CURRENT_USER.email,
         userName: CURRENT_USER.name,
       };
-      const res = await fetch(`${API}/reservations`, {
+      const res = await fetch(`${API_BASE}/reservations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +131,7 @@ export default function BookingPage() {
   const handleCancel = async (reservationId: number) => {
     setCancelling(reservationId);
     try {
-      const res = await fetch(`${API}/reservations/${reservationId}`, {
+      const res = await fetch(`${API_BASE}/reservations/${reservationId}`, {
         method: "DELETE",
         headers: {
           "x-user-email": CURRENT_USER.email,

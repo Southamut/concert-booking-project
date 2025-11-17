@@ -7,6 +7,7 @@ import { showSuccessToast } from "@/components/toast/showSuccessToast";
 import { toast } from "sonner";
 import { User, SaveIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { API_BASE } from "@/lib/api";
 
 type CreateConcertPayload = {
     name: string;
@@ -21,7 +22,7 @@ interface AdminCreateConcertFormProps {
 }
 
 export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
-    const { apiBase = "http://localhost:3001", onCreated, onSuccess } = props;
+    const { apiBase = API_BASE, onCreated, onSuccess } = props;
 
     const [form, setForm] = useState<CreateConcertPayload>({
         name: "",
