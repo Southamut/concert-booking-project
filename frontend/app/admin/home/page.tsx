@@ -8,6 +8,8 @@ import { User, CircleCheck, XCircle } from "lucide-react";
 import { AdminCreateConcertForm } from "@/components/admin/AdminCreateConcertForm";
 import { toast } from "sonner";
 import { showSuccessToast } from "@/components/toast/showSuccessToast";
+import { Spinner } from "@/components/ui/spinner";
+import { API_BASE } from "@/lib/api";
 
 type Concert = {
   id: number;
@@ -27,12 +29,12 @@ type Reservation = {
   cancelledAt?: string;
 };
 
-const API = "http://localhost:3001";
-
 export default function AdminHomePage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [tab, setTab] = useState<"overview" | "create">("overview");
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   const totalSeats = useMemo(
     () => concerts.reduce((sum, c) => sum + c.totalSeats, 0),
@@ -49,15 +51,33 @@ export default function AdminHomePage() {
 
   // Load data on mount
   const loadData = async () => {
-    const [cRes, rRes] = await Promise.all([
-      fetch(`${API}/concerts`, { cache: "no-store" }),
-      fetch(`${API}/reservations/all`, {
-        headers: { "x-is-admin": "true" },
-        cache: "no-store",
-      }),
-    ]);
-    if (cRes.ok) setConcerts(await cRes.json());
-    if (rRes.ok) setReservations(await rRes.json());
+    setLoading(true);
+    try {
+      const [cRes, rRes] = await Promise.all([
+        fetch(`${API_BASE}/concerts`, { cache: "no-store" }),
+        fetch(`${API_BASE}/reservations/all`, {
+          headers: { "x-is-admin": "true" },
+          cache: "no-store",
+        }),
+      ]);
+      if (!cRes.ok) {
+        const msg = await cRes.text();
+        toast.error(msg || "Failed to load concerts");
+        return;
+      }
+      if (!rRes.ok) {
+        const msg = await rRes.text();
+        toast.error(msg || "Failed to load reservations");
+        return;
+      }
+      const [c, r] = await Promise.all([cRes.json(), rRes.json()]);
+      setConcerts(c);
+      setReservations(r);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to load data");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Load data on mount
@@ -67,17 +87,24 @@ export default function AdminHomePage() {
 
   // Delete a concert
   const handleDeleteConcert = async (concertId: number) => {
-    const res = await fetch(`${API}/concerts/${concertId}`, {
-      method: "DELETE",
-      headers: { "x-is-admin": "true" },
-    });
-    if (!res.ok) {
-      const msg = await res.text();
-      toast.error(msg || "Delete failed");
-      return;
+    setDeleting(concertId);
+    try {
+      const res = await fetch(`${API_BASE}/concerts/${concertId}`, {
+        method: "DELETE",
+        headers: { "x-is-admin": "true" },
+      });
+      if (!res.ok) {
+        const msg = await res.text();
+        toast.error(msg || "Delete failed");
+        return;
+      }
+      showSuccessToast("Delete successfully");
+      await loadData();
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete concert");
+    } finally {
+      setDeleting(null);
     }
-    await loadData();
-    showSuccessToast("Delete successfully");
   };
 
   return (
@@ -120,12 +147,25 @@ export default function AdminHomePage() {
 
         {/* Overview content */}
         {tab === "overview" && (
-          <AdminConcertCardList concerts={concerts} onDelete={handleDeleteConcert} />
+          <>
+            {loading && (
+              <div className="flex items-center justify-center py-12">
+                <Spinner className="size-8 text-gray-400" />
+              </div>
+            )}
+            {!loading && (
+              <AdminConcertCardList 
+                concerts={concerts} 
+                onDelete={handleDeleteConcert}
+                deleting={deleting}
+              />
+            )}
+          </>
         )}
 
         {/* Create tab placeholder */}
         {tab === "create" && (
-          <AdminCreateConcertForm onCreated={loadData} />
+          <AdminCreateConcertForm onCreated={loadData} onSuccess={() => setTab("overview")}  />
         )}
       </div>
     </AdminLayout>

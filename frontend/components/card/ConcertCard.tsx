@@ -17,6 +17,8 @@ export const ConcertCard = ({
     onCancel,
     reservationId,
     actionSlot,
+    reserving,
+    cancelling,
 }: {
     concert: Concert;
     reserved?: boolean;
@@ -24,6 +26,8 @@ export const ConcertCard = ({
     onCancel?: (reservationId: number) => void;
     reservationId?: number;
     actionSlot?: React.ReactNode;
+    reserving?: number | null;
+    cancelling?: number | null;
 }) => {
 
     const soldOut = concert.availableSeats === 0;
@@ -51,16 +55,17 @@ export const ConcertCard = ({
                     <Button
                         className="sm:w-[160px] w-full h-15 bg-[#F96464] text-white py-6 px-4 rounded-md text-2xl font-semibold"
                         onClick={() => onCancel(reservationId)}
+                        disabled={cancelling === reservationId}
                     >
-                        Cancel
+                        {cancelling === reservationId ? "Cancelling..." : "Cancel"}
                     </Button>
                 ) : (
                     <Button
                         className={`sm:w-[160px] w-full h-15 ${soldOut ? "bg-gray-400" : "bg-[#1692EC]"} text-white py-6 px-4 rounded-md text-2xl font-semibold`}
-                        disabled={soldOut || !!reserved || !onReserve}
+                        disabled={soldOut || !!reserved || !onReserve || reserving === concert.id}
                         onClick={() => onReserve && onReserve(concert.id)}
                     >
-                        {soldOut ? "Sold out" : "Reserve"}
+                        {reserving === concert.id ? "Reserving..." : soldOut ? "Sold out" : "Reserve"}
                     </Button>
                 )}
             </div>
