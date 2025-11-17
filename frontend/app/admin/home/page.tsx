@@ -125,7 +125,7 @@ export default function AdminHomePage() {
 
         {/* Create tab placeholder */}
         {tab === "create" && (
-          <AdminCreateConcertForm onCreated={loadData} />
+          <AdminCreateConcertForm onCreated={loadData} onSuccess={() => setTab("overview")}  />
         )}
       </div>
     </AdminLayout>
