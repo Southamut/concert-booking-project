@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { showSuccessToast } from "@/components/toast/showSuccessToast";
 import { User, SaveIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,10 +16,11 @@ type CreateConcertPayload = {
 interface AdminCreateConcertFormProps {
     apiBase?: string;
     onCreated?: () => Promise<void> | void;
+    onSuccess?: () => void; // for overview page to refresh data
 }
 
 export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
-    const { apiBase = "http://localhost:3001", onCreated } = props;
+    const { apiBase = "http://localhost:3001", onCreated, onSuccess } = props;
 
     const [form, setForm] = useState<CreateConcertPayload>({
         name: "",
@@ -86,6 +86,7 @@ export function AdminCreateConcertForm(props: AdminCreateConcertFormProps) {
             setForm({ name: "", description: "", totalSeats: 0 });
             await onCreated?.();
             showSuccessToast("Create successfully");
+            onSuccess?.(); //callback for overview page to refresh data
         } catch (err: any) {
             showSuccessToast(err?.message ?? "Create failed");
         } finally {
