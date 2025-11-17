@@ -174,7 +174,25 @@ concert-booking-project/
     └── lib/                  # Utilities (API config)
 ```
 
+## ⭐ Bonus Task
+
+### 1.Website Optimization in case Intensive Data & High Traffic
+
+- Change database to SQL with proper indexing
+- Implement Redis caching for frequently accessed data (concerts, statistics). This may reduce server traffic and make user experience better
+
+### 2.Handling many users want to reserve the ticket at the same time? (Preventing Overbooking)
+
+Using Queue-Based System to make reservation by queue
+  - When a user requests a reservation, the request is added to a queue instead of processing immediately
+  - Process reservations sequentially
+  - Prevent race conditions
+
+Also use Database Constraints to double-check data before saving
+  - prevent same user can accidently booking more than 1 ticket per consert
+  - check that consert still have available seats to prevent user can accidently booking sold out ticket
+
 ---
 
 **Note**: This project uses an in-memory database. Data is lost on server restart.
-
+ 
